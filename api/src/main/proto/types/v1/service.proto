@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package io.crocky.types.v1;
+
+import "types/v1/endpoint.proto";
+
+option java_multiple_files = true;
+
+message Service {
+  string domain = 1; // Service domain
+  string id = 2;
+  string name = 3; // Service name
+  string type = 4; // Service type - for example http/grpc/wss etc
+  string region = 5;
+  string locality = 6;
+  Endpoint endpoint = 7;
+  ServiceStatus status = 8;
+  repeated string labels = 9; // to filter service according to set of labels
+
+  int64 version = 10;
+
+  enum ServiceStatus {
+    UNKNOWN = 0;            // default, state is unknown
+    STARTING = 1;           // process is alive, but not ready yet (warm-up, migrations)
+    UP = 2;                 // service is healthy and ready to accept requests
+    OUT_OF_SERVICE = 3;     // manually disabled or under maintenance
+    DOWN = 4;               // service is down (health check failed or lease expired)
+  }
+}

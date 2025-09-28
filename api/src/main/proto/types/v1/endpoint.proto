@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package io.crocky.types.v1;
+
+message Endpoint {
+  string scheme = 1; // URI scheme: http, https, grpc, tcp, ws, wss
+  string address = 2; // Hostname or IP (IPv4/IPv6)
+  uint32 port = 3;    // 0..65535
+  string path = 4;    // Optional URI path (/api, /health)
+  map<string, string> metadata = 5; // Arbitrary client hints (e.g., {"tls":"true", "weight":"10"})
+}

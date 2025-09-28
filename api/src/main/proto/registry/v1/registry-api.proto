@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package io.crocky.registry.v1;
+
+import "types/v1/service.proto";
+import "types/v1/endpoint.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+
+service ServiceRegistryApiV1 {
+  rpc Register(ServiceRegisterRequest) returns (RegisterResponse);
+  rpc UpdateService(ServiceUpdateRequest) returns (google.protobuf.Empty);
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+  rpc Deregister(DeregisterRequest) returns (google.protobuf.Empty);
+}
+
+message ServiceRegisterRequest {
+  ServiceSpec description = 2;
+  ServiceLeaseConfiguration lease = 3;
+}
+
+message ServiceSpec {
+  string domain = 1;
+  string name = 2;
+  string type = 3;
+  string region = 4;
+  string locality = 5;
+  types.v1.Endpoint endpoint = 6;
+  types.v1.Service.ServiceStatus status = 7;
+  repeated string labels = 8;
+}
+
+message ServiceLeaseConfiguration {
+  google.protobuf.Duration lease_time = 1; // 1s ≤ lease_time ≤ 30m
+}
+
+message RegisterResponse {
+  string id = 1;
+  int64 version = 2;
+  google.protobuf.Timestamp lease_expires_at = 3;
+}
+
+message HealthCheckRequest {
+  string id = 1;
+}
+
+message HealthCheckResponse {
+  int64 version = 1;
+  google.protobuf.Timestamp lease_expires_at = 2; // UTC time
+}
+
+message ServiceUpdateRequest {
+  string id = 1;
+  ServiceSpec service = 2;
+  int64 version = 3;
+}
+
+message DeregisterRequest {
+  string id = 1;
+}

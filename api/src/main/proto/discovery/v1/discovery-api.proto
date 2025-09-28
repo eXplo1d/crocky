@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package io.crocky.discovery.v1;
+
+import "types/v1/service.proto";
+
+option java_multiple_files = true;
+
+service DiscoveryApi {
+  rpc Find(ServiceFindRequest) returns (ServiceFindResponse);
+  rpc Watch(ServiceWatchRequest) returns (stream ServiceWatchResponse);
+}
+
+message ServiceFindRequest {
+  string domain = 1;
+  repeated string id = 2;
+  repeated string name = 3;
+  repeated string type = 4;
+  repeated string region = 5;
+  repeated string locality = 6;
+  repeated types.v1.Service.ServiceStatus status = 7;
+  repeated string labels = 8;
+}
+
+message ServiceFindResponse {
+  repeated types.v1.Service services = 1;
+}
+
+message ServiceWatchRequest {
+  string domain = 1;
+  repeated string id = 2;
+  repeated string name = 3;
+  repeated string type = 4;
+  repeated string region = 5;
+  repeated string locality = 6;
+  repeated types.v1.Service.ServiceStatus status = 7;
+  repeated string labels = 8;
+}
+
+message ServiceWatchResponse {
+  ServiceWatchEvent event = 1;
+  oneof payload {
+    ServiceWatchUpsertResponse upsert = 2;
+    ServiceWatchRemoveResponse remove = 3;
+  }
+
+  enum ServiceWatchEvent {
+    UNKNOWN = 0;
+    UPSERT = 1;
+    REMOVE = 2;
+  }
+}
+
+message ServiceWatchUpsertResponse {
+  repeated types.v1.Service services = 1;
+}
+
+message ServiceWatchRemoveResponse {
+  repeated RemovedService services = 1;
+
+  message RemovedService {
+    string name = 1;
+    string id = 2;
+  }
+}
